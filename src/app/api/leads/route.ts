@@ -73,11 +73,25 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error('Error creating lead:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      data: data,
+    })
+    
+    // Return more detailed error in development
+    const errorMessage = process.env.NODE_ENV === 'development' && error instanceof Error
+      ? error.message
+      : 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
+    
     return NextResponse.json(
       {
         ok: false,
         error: 'server_error',
-        message: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+        message: errorMessage,
+        ...(process.env.NODE_ENV === 'development' && error instanceof Error && {
+          details: error.stack,
+        }),
       },
       { status: 500 }
     )
