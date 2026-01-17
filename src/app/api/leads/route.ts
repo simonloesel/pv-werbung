@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
   // #region agent log
   fetch('http://127.0.0.1:7243/ingest/e2d0a3a1-d1e6-4360-ae8a-411ac58c3655',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'route.ts:5',message:'API POST /api/leads called',data:{hasDbUrl:!!process.env.DATABASE_URL,dbUrlPrefix:process.env.DATABASE_URL?.substring(0,20)||'missing'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
   // #endregion
+  let data: any = null
   try {
     // Check if DATABASE_URL is set
     if (!process.env.DATABASE_URL) {
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const data = validationResult.data
+    data = validationResult.data
 
     // Transform primaryGoal array to string
     const primaryGoalString = data.primaryGoal ? data.primaryGoal.join(', ') : null
