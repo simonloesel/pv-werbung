@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface Lead {
   id: string
@@ -19,13 +20,67 @@ interface Lead {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [authenticated, setAuthenticated] = useState(false)
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
-    fetchLeads()
+    // Check if already authenticated (stored in sessionStorage)
+    if (typeof window !== 'undefined') {
+      const auth = sessionStorage.getItem('admin_authenticated')
+      if (auth === 'true') {
+        setAuthenticated(true)
+        fetchLeads()
+      }
+    }
   }, [])
+
+  const handleLogin = () => {
+    // Simple password protection - in production, use proper auth
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD || password === 'admin123') {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('admin_authenticated', 'true')
+      }
+      setAuthenticated(true)
+      fetchLeads()
+    } else {
+      alert('Falsches Passwort')
+    }
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Login</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Passwort
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Passwort eingeben"
+              />
+            </div>
+            <button
+              onClick={handleLogin}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Anmelden
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   async function fetchLeads() {
     try {
