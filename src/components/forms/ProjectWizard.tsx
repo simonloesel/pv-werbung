@@ -52,13 +52,16 @@ export function ProjectWizard() {
   }
 
   const onSubmit = async (data: ProjectWizardFormData) => {
+    console.log('Form submitted:', data)
     setIsSubmitting(true)
     try {
+      console.log('Sending request to /api/leads')
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
+      console.log('Response received:', response.status, response.statusText)
 
       if (!response.ok) {
         const errorText = await response.text()
