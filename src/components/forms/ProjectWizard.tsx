@@ -34,6 +34,14 @@ export function ProjectWizard() {
     mode: 'onChange',
   })
 
+  // Debug: Log errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log('=== FORM VALIDATION ERRORS ===')
+      console.log('Errors:', errors)
+    }
+  }, [errors])
+
   // LocalStorage speichern/laden
   useEffect(() => {
     const saved = localStorage.getItem('projectWizardForm')
@@ -52,7 +60,9 @@ export function ProjectWizard() {
   }
 
   const onSubmit = async (data: ProjectWizardFormData) => {
+    console.log('=== FORM SUBMISSION STARTED ===')
     console.log('Form submitted:', data)
+    console.log('Current step:', currentStep)
     setIsSubmitting(true)
     try {
       console.log('Sending request to /api/leads')
@@ -191,7 +201,14 @@ export function ProjectWizard() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-lg p-8">
+      <form 
+        onSubmit={(e) => {
+          console.log('=== FORM SUBMIT EVENT FIRED ===')
+          console.log('Event:', e)
+          handleSubmit(onSubmit)(e)
+        }} 
+        className="bg-white rounded-lg shadow-lg p-8"
+      >
         {currentStep === 1 && <StepCompany register={register} errors={errors} />}
         {currentStep === 2 && <StepSite register={register} errors={errors} watch={watch} />}
         {currentStep === 3 && <StepDemand register={register} errors={errors} />}
