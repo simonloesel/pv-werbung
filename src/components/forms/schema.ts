@@ -8,7 +8,7 @@ export const projectWizardSchema = z.object({
   phone: z.string().optional(),
   address: z.string().min(5, 'Adresse ist erforderlich'),
   industry: z.string().optional(),
-  role: z.enum(['Eigentümer', 'Mieter', 'Betreiber']).optional(),
+  role: z.enum(['Eigentümer', 'Mieter', 'Betreiber']).optional().or(z.literal('')),
 
   // Step 2: Fläche
   siteType: z.enum(['Dach', 'Parkplatz', 'Freifläche', 'Fassade', 'Kombination']),
@@ -21,14 +21,14 @@ export const projectWizardSchema = z.object({
 
   // Step 3: Strombedarf
   annualConsumptionKwh: z.number().int().positive('Jahresverbrauch ist erforderlich'),
-  peakLoadKw: z.number().positive().optional(),
-  loadProfile: z.enum(['konstant', 'werktags', 'Schichtbetrieb', 'sonstiges']).optional(),
+  peakLoadKw: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().positive().optional()),
+  loadProfile: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['konstant', 'werktags', 'Schichtbetrieb', 'sonstiges']).optional()),
   metering: z.string().optional(),
   currentTariffInfo: z.string().optional(),
 
   // Step 4: Netz & Technik
-  gridConnectionPowerKw: z.number().positive().optional(),
-  transformerOnSite: z.enum(['yes', 'no', 'unknown']).optional(),
+  gridConnectionPowerKw: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().positive().optional()),
+  transformerOnSite: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['yes', 'no', 'unknown']).optional()),
   connectionPointDistanceM: z.number().int().positive().optional(),
   parkingEV: z.boolean().optional(),
   batteryInterest: z.boolean().optional(),
