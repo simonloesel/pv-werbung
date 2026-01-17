@@ -192,7 +192,7 @@ export const solutionContent = {
       },
       {
         type: "Parkplatz",
-        description: "Parkplätze mit Carports oder Überdachungen",
+        description: "Parkflächen mit und ohne Überdachung",
       },
       {
         type: "Freifläche",
@@ -207,10 +207,10 @@ export const solutionContent = {
   requiredData: {
     title: "Welche Daten werden benötigt?",
     data: [
-      "Lastprofil: Wann und wie viel Strom wird verbraucht?",
-      "Netzanschluss: Welche Leistung ist verfügbar?",
-      "Fläche: Größe, Ausrichtung, Verschattung",
-      "Statik: Grobe Angaben zur Tragfähigkeit (kann auch später geklärt werden)",
+      "Lastprofil: Wann und wie viel Strom wird verbraucht? Ein 15-Minuten-Lastprofil erhalten Sie von Ihrem Stromversorger. Wir helfen Ihnen gerne bei der Kommunikation.",
+      "Netzanschluss: Welche Leistung ist verfügbar? Wir holen diese Information bei Interesse gerne für Sie ein.",
+      "Fläche: Größe, Ausrichtung, Verschattung. Bei Interesse analysieren wir die Fläche gerne vor Ort oder via Google Earth.",
+      "Statik: Grobe Angaben zur Tragfähigkeit im Falle einer Dachfläche. Selbstverständlich klären wir die Machbarkeit bei Interesse frühzeitig ab.",
     ],
   },
   projectDuration: {
