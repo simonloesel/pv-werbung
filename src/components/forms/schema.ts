@@ -15,21 +15,30 @@ export const projectWizardSchema = z.object({
   availableAreaM2: z.number().int().positive('Fläche muss größer als 0 sein'),
   roofType: z.string().optional(),
   roofCovering: z.string().optional(),
-  yearBuilt: z.number().int().positive().optional(),
+  yearBuilt: z.preprocess((val) => (val === '' || val === undefined || val === null ? undefined : Number(val)), z.number().int().positive().optional()),
   staticsKnown: z.boolean().optional(),
   ownershipClear: z.boolean().optional(),
 
   // Step 3: Strombedarf
   annualConsumptionKwh: z.number().int().positive('Jahresverbrauch ist erforderlich'),
-  peakLoadKw: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().positive().optional()),
+  peakLoadKw: z.preprocess((val) => {
+    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) return undefined
+    return val
+  }, z.number().positive().optional()),
   loadProfile: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['konstant', 'werktags', 'Schichtbetrieb', 'sonstiges']).optional()),
   metering: z.string().optional(),
   currentTariffInfo: z.string().optional(),
 
   // Step 4: Netz & Technik
-  gridConnectionPowerKw: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().positive().optional()),
+  gridConnectionPowerKw: z.preprocess((val) => {
+    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) return undefined
+    return val
+  }, z.number().positive().optional()),
   transformerOnSite: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['yes', 'no', 'unknown']).optional()),
-  connectionPointDistanceM: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().int().positive().optional()),
+  connectionPointDistanceM: z.preprocess((val) => {
+    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) return undefined
+    return val
+  }, z.number().int().positive().optional()),
   parkingEV: z.boolean().optional(),
   batteryInterest: z.boolean().optional(),
   evChargingInterest: z.boolean().optional(),
