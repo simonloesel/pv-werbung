@@ -60,17 +60,31 @@ export function ProjectWizard() {
         body: JSON.stringify(data),
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error:', response.status, errorText)
+        let errorMessage = 'Fehler beim Absenden.'
+        try {
+          const errorJson = JSON.parse(errorText)
+          errorMessage = errorJson.message || errorJson.error || errorMessage
+        } catch {
+          errorMessage = `Fehler ${response.status}: ${errorText || 'Unbekannter Fehler'}`
+        }
+        alert(errorMessage)
+        return
+      }
+
       const result = await response.json()
 
       if (result.ok) {
         localStorage.removeItem('projectWizardForm')
         setSubmitSuccess(true)
       } else {
-        alert('Fehler beim Absenden: ' + (result.error || 'Unbekannter Fehler'))
+        alert('Fehler beim Absenden: ' + (result.error || result.message || 'Unbekannter Fehler'))
       }
     } catch (error) {
       console.error('Submit error:', error)
-      alert('Fehler beim Absenden. Bitte versuchen Sie es später erneut.')
+      alert('Fehler beim Absenden: ' + (error instanceof Error ? error.message : 'Bitte versuchen Sie es später erneut.'))
     } finally {
       setIsSubmitting(false)
     }
