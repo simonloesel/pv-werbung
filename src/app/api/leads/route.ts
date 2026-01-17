@@ -55,7 +55,10 @@ export async function POST(request: NextRequest) {
     // Save to database
     console.log('[API] Attempting to create lead in database...')
     console.log('[API] Database URL prefix:', process.env.DATABASE_URL?.substring(0, 60))
-    const lead = await prisma.lead.create({
+    
+    let lead
+    try {
+      lead = await prisma.lead.create({
       data: {
         companyName: data.companyName,
         contactName: data.contactName,
@@ -92,7 +95,14 @@ export async function POST(request: NextRequest) {
         consentPrivacy: data.consentPrivacy,
       },
     })
-    console.log('[API] Lead created successfully:', lead.id)
+      console.log('[API] Lead created successfully:', lead.id)
+    } catch (createError: any) {
+      console.error('[API] ERROR in prisma.lead.create:', createError)
+      console.error('[API] Error message:', createError.message)
+      console.error('[API] Error code:', createError.code)
+      console.error('[API] Error meta:', createError.meta)
+      throw createError // Re-throw to be caught by outer catch block
+    }
     // #region agent log
     fetch('http://127.0.0.1:7243/ingest/e2d0a3a1-d1e6-4360-ae8a-411ac58c3655',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'route.ts:66',message:'prisma.lead.create succeeded',data:{leadId:lead.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
