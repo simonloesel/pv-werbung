@@ -54,4 +54,6 @@ model Lead {
   consentPrivacy        Boolean  @default(false)
 
   status                String   @default("new") // new, qualified, disqualified, contacted
+  
+  @@map("lead")
 }
