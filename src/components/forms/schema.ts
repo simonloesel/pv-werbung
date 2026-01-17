@@ -8,7 +8,7 @@ export const projectWizardSchema = z.object({
   phone: z.string().optional(),
   address: z.string().min(5, 'Adresse ist erforderlich'),
   industry: z.string().optional(),
-  role: z.enum(['Eigentümer', 'Mieter', 'Betreiber']).optional().or(z.literal('')),
+  role: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['Eigentümer', 'Mieter', 'Betreiber']).optional()),
 
   // Step 2: Fläche
   siteType: z.enum(['Dach', 'Parkplatz', 'Freifläche', 'Fassade', 'Kombination']),
@@ -29,7 +29,7 @@ export const projectWizardSchema = z.object({
   // Step 4: Netz & Technik
   gridConnectionPowerKw: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().positive().optional()),
   transformerOnSite: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['yes', 'no', 'unknown']).optional()),
-  connectionPointDistanceM: z.number().int().positive().optional(),
+  connectionPointDistanceM: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.number().int().positive().optional()),
   parkingEV: z.boolean().optional(),
   batteryInterest: z.boolean().optional(),
   evChargingInterest: z.boolean().optional(),
