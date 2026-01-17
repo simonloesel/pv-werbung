@@ -4,6 +4,19 @@ import { projectWizardSchema } from '../../../components/forms/schema'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL is not set in environment variables')
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'configuration_error',
+          message: 'Database configuration missing',
+        },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
 
     // Validate with Zod
