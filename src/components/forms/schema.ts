@@ -15,7 +15,11 @@ export const projectWizardSchema = z.object({
   availableAreaM2: z.number().int().positive('Fläche muss größer als 0 sein'),
   roofType: z.string().optional(),
   roofCovering: z.string().optional(),
-  yearBuilt: z.preprocess((val) => (val === '' || val === undefined || val === null ? undefined : Number(val)), z.number().int().positive().optional()),
+  yearBuilt: z.preprocess((val) => {
+    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) return undefined
+    const num = Number(val)
+    return isNaN(num) ? undefined : num
+  }, z.number().int().positive().optional()),
   staticsKnown: z.boolean().optional(),
   ownershipClear: z.boolean().optional(),
 
