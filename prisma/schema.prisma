@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+
+  // Step 1: Unternehmen
+  companyName           String
+  contactName           String
+  email                 String
+  phone                 String?
+  address               String
+  industry              String?
+  role                  String?
+
+  // Step 2: Fläche
+  siteType              String
+  availableAreaM2       Int
+  roofType              String?
+  roofCovering          String?
+  yearBuilt             Int?
+  staticsKnown          Boolean?
+  ownershipClear        Boolean?
+
+  // Step 3: Strombedarf
+  annualConsumptionKwh  Int
+  peakLoadKw            Int?
+  loadProfile           String?
+  metering              String?
+  currentTariffInfo     String?
+
+  // Step 4: Netz & Technik
+  gridConnectionPowerKw Int?
+  transformerOnSite     String?
+  connectionPointDistanceM Int?
+  parkingEV             Boolean?
+  batteryInterest       Boolean?
+  evChargingInterest    Boolean?
+
+  // Step 5: Ziele & Rahmen
+  primaryGoal           String? // comma-separated or JSON string
+  timeline              String?
+  notes                 String?
+  consentPrivacy        Boolean  @default(false)
+
+  status                String   @default("new") // new, qualified, disqualified, contacted
+}
