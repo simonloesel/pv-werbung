@@ -27,6 +27,7 @@ export function ProjectWizard() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
     trigger,
   } = useForm<ProjectWizardFormData>({
@@ -213,7 +214,7 @@ export function ProjectWizard() {
         {currentStep === 2 && <StepSite register={register} errors={errors} watch={watch} />}
         {currentStep === 3 && <StepDemand register={register} errors={errors} />}
         {currentStep === 4 && <StepGrid register={register} errors={errors} />}
-        {currentStep === 5 && <StepGoals register={register} errors={errors} />}
+        {currentStep === 5 && <StepGoals register={register} errors={errors} watch={watch} setValue={setValue} />}
 
         <div className="flex justify-between mt-8 pt-6 border-t">
           <button

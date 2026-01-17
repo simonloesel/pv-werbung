@@ -1,14 +1,16 @@
 'use client'
 
-import { UseFormRegister, FieldErrors } from 'react-hook-form'
+import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form'
 import { ProjectWizardFormData } from '../schema'
 
 interface StepGoalsProps {
   register: UseFormRegister<ProjectWizardFormData>
   errors: FieldErrors<ProjectWizardFormData>
+  watch: UseFormWatch<ProjectWizardFormData>
+  setValue: UseFormSetValue<ProjectWizardFormData>
 }
 
-export function StepGoals({ register, errors }: StepGoalsProps) {
+export function StepGoals({ register, errors, watch, setValue }: StepGoalsProps) {
   const goalOptions = [
     'Kosten senken',
     'ESG',
@@ -16,6 +18,17 @@ export function StepGoals({ register, errors }: StepGoalsProps) {
     'Eigenverbrauch',
     'Ladeinfrastruktur',
   ]
+
+  const selectedGoals = watch('primaryGoal') || []
+
+  const handleGoalChange = (goal: string, checked: boolean) => {
+    const current = Array.isArray(selectedGoals) ? selectedGoals : []
+    if (checked) {
+      setValue('primaryGoal', [...current, goal])
+    } else {
+      setValue('primaryGoal', current.filter((g: string) => g !== goal))
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -29,9 +42,9 @@ export function StepGoals({ register, errors }: StepGoalsProps) {
           {goalOptions.map((goal) => (
             <label key={goal} className="flex items-center">
               <input
-                {...register('primaryGoal')}
                 type="checkbox"
-                value={goal}
+                checked={Array.isArray(selectedGoals) && selectedGoals.includes(goal)}
+                onChange={(e) => handleGoalChange(goal, e.target.checked)}
                 className="mr-2"
               />
               <span>{goal}</span>

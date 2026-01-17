@@ -36,7 +36,7 @@ export const projectWizardSchema = z.object({
 
   // Step 5: Ziele & Rahmen
   primaryGoal: z.array(z.string()).optional(),
-  timeline: z.enum(['asap', '3-6 Monate', '6-12', '>12']).optional(),
+  timeline: z.preprocess((val) => (val === '' || val === undefined ? undefined : val), z.enum(['asap', '3-6 Monate', '6-12', '>12']).optional()),
   notes: z.string().optional(),
   consentPrivacy: z.boolean().refine((val) => val === true, {
     message: 'Datenschutzerklärung muss akzeptiert werden',
