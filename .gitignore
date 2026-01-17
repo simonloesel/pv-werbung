@@ -39,3 +39,6 @@ Thumbs.db
 # Temporäre Dateien
 *.tmp
 *.bak
+
+# Next.js TypeScript definitions
+next-env.d.ts

@@ -1,7 +1,7 @@
 'use client'
 
 import * as Tabs from '@radix-ui/react-tabs'
-import { benefitsContent } from '../../../lib/content'
+import { benefitsContent } from '../../lib/content'
 
 export function BenefitTabs() {
   return (
