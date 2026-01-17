@@ -4,13 +4,16 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
+// Use DATABASE_URL or fallback to POSTGRES_PRISMA_URL (for Vercel compatibility)
+const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query'] : ['error'],
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: databaseUrl,
       },
     },
   })
