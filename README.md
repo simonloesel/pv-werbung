@@ -2,14 +2,12 @@
 
 Eigenständige Next.js-Website für PV-Projektentwicklung und Lead-Generierung. Unternehmen können Flächen anbieten, Projekte entwickeln lassen und Strom direkt abnehmen.
 
-Eine Next.js-Website für PV-Projektentwicklung und Lead-Generierung. Unternehmen können Flächen anbieten, Projekte entwickeln lassen und Strom direkt abnehmen.
-
 ## Technologie-Stack
 
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
-- **Prisma** (SQLite)
+- **Prisma** (PostgreSQL)
 - **React Hook Form** + **Zod** (Form-Validation)
 - **Radix UI** (Tabs, Accordion)
 
@@ -31,7 +29,7 @@ src/
     content.ts            # Content-Bausteine
     db.ts                 # Prisma Client
 prisma/
-  schema.prisma           # Datenbankschema
+  schema.prisma           # Datenbankschema (PostgreSQL)
 ```
 
 ## Setup
@@ -46,18 +44,26 @@ npm install
 
 Erstelle eine `.env` Datei im Root-Verzeichnis:
 
+**Für lokale Entwicklung (PostgreSQL erforderlich):**
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://user:password@localhost:5432/pv_werbung"
 ```
 
-### 3. Prisma Database erstellen
+**Für Vercel/Production:**
+- Nutze Vercel Postgres (empfohlen) oder
+- Externe PostgreSQL-Datenbank (z.B. Supabase, Neon, Railway)
+
+### 3. Prisma Database Setup
 
 ```bash
 # Prisma Client generieren
 npm run db:generate
 
-# Database Schema erstellen
+# Database Schema erstellen (für Entwicklung)
 npm run db:push
+
+# Oder Migration erstellen (für Production)
+npm run db:migrate
 ```
 
 ### 4. Development Server starten
@@ -67,6 +73,41 @@ npm run dev
 ```
 
 Die Website ist dann erreichbar unter `http://localhost:3000`.
+
+## Deployment auf Vercel
+
+### 1. Vercel Postgres einrichten (empfohlen)
+
+1. In Vercel Dashboard: **Storage** → **Create Database** → **Postgres**
+2. Environment Variable `DATABASE_URL` wird automatisch gesetzt
+3. Deploy starten
+
+### 2. Migration auf Vercel ausführen
+
+Nach dem ersten Deployment:
+```bash
+npx prisma migrate deploy
+```
+
+Oder in Vercel:
+- **Settings** → **Deploy Hooks** → Custom Build Command: `prisma migrate deploy && npm run build`
+
+### 3. Externe PostgreSQL-Datenbank
+
+**Option A: Supabase** (kostenloser Plan verfügbar)
+1. Projekt erstellen auf https://supabase.com
+2. Connection String kopieren
+3. Als `DATABASE_URL` in Vercel Environment Variables setzen
+
+**Option B: Neon** (kostenloser Plan verfügbar)
+1. Projekt erstellen auf https://neon.tech
+2. Connection String kopieren
+3. Als `DATABASE_URL` in Vercel Environment Variables setzen
+
+**Option C: Railway** (kostenloser Plan verfügbar)
+1. Projekt erstellen auf https://railway.app
+2. PostgreSQL Service hinzufügen
+3. Connection String als `DATABASE_URL` in Vercel setzen
 
 ## Features
 
@@ -117,7 +158,7 @@ Die Website ist dann erreichbar unter `http://localhost:3000`.
 
 **POST** `/api/leads`
 
-Speichert Lead-Daten in der Datenbank (via Prisma).
+Speichert Lead-Daten in der Datenbank (via Prisma/PostgreSQL).
 
 **Request Body:** Siehe `src/components/forms/schema.ts`
 
@@ -128,7 +169,7 @@ Speichert Lead-Daten in der Datenbank (via Prisma).
 
 ## Datenbank
 
-Die Datenbank nutzt SQLite (entwicklungsfreundlich) und kann einfach auf PostgreSQL/MySQL umgestellt werden.
+Die Datenbank nutzt **PostgreSQL** (production-ready).
 
 **Lead-Modell** enthält alle Formularfelder plus:
 - `id`: CUID
@@ -147,11 +188,12 @@ npm run db:studio
 
 ```bash
 npm run dev          # Development Server
-npm run build        # Production Build
+npm run build        # Production Build (generiert Prisma Client automatisch)
 npm run start        # Production Server
 npm run lint         # ESLint
 npm run db:generate  # Prisma Client generieren
-npm run db:push      # Schema zu DB pushen
+npm run db:push      # Schema zu DB pushen (Development)
+npm run db:migrate   # Migration erstellen (Production)
 npm run db:studio    # Prisma Studio öffnen
 ```
 
@@ -174,44 +216,43 @@ Alle Copy-Texte sind in `src/lib/content.ts` zentralisiert.
 3. API Route: `src/app/api/leads/route.ts`
 4. Prisma Schema: `prisma/schema.prisma`
 
-## Deployment
+## Production Deployment
 
 ### Vercel (empfohlen)
 
 1. Projekt zu GitHub pushen
 2. Vercel Projekt erstellen
-3. Environment Variables setzen (`DATABASE_URL`)
-4. Deploy
+3. **Vercel Postgres** hinzufügen (Storage → Postgres)
+4. Environment Variables werden automatisch gesetzt
+5. Deploy
 
-**Hinweis:** SQLite ist nicht für Production geeignet. Für Production sollte PostgreSQL verwendet werden.
+**Wichtig:** Nach dem ersten Deployment Migration ausführen:
+```bash
+npx prisma migrate deploy
+```
 
-### PostgreSQL für Production
+### Migration auf Production anwenden
 
-1. `prisma/schema.prisma` anpassen:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
+Nach Vercel Postgres Setup:
+1. Vercel CLI installieren: `npm i -g vercel`
+2. Login: `vercel login`
+3. Projekt linken: `vercel link`
+4. Migration deployen: `npx prisma migrate deploy`
 
-2. `DATABASE_URL` in `.env` anpassen
-
-3. Migration erstellen:
-   ```bash
-   npx prisma migrate dev --name init
-   ```
+Oder über Vercel Dashboard:
+- **Settings** → **Deploy Hooks** → Build Command anpassen
 
 ## Akzeptanzkriterien
 
 ✅ Responsive Design (Mobile + Desktop)
 ✅ Form-Validation (Client + Server mit Zod)
 ✅ LocalStorage-Zwischenspeicherung
-✅ Leads werden in DB gespeichert
+✅ Leads werden in PostgreSQL-Datenbank gespeichert
 ✅ Alle Seiten vorhanden (Lösung, Vorteile, Kontakt, etc.)
 ✅ Vorteile-Seite mit Tabs
 ✅ FAQ auf Lösungsseite
 ✅ Datenschutz/Impressum vorhanden
+✅ Production-ready mit PostgreSQL
 
 ## Nächste Schritte
 

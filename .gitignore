@@ -42,3 +42,5 @@ Thumbs.db
 
 # Next.js TypeScript definitions
 next-env.d.ts
+.vercel
+.env*.local
